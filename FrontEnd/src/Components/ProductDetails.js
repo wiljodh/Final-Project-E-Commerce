@@ -1,7 +1,67 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import Cookies from 'universal-cookie'
+import axios from 'axios'
+
+const cookies = new Cookies();
 
 class ProductDetails extends Component {
+
+  state = {
+    idproduk: '',
+    namaproduct: '',
+    prices: '',
+    description: '',
+    qty: 1
+  }
+
+  componentWillMount = () =>{
+    var idproduct = this.props.location.state.idproduk
+    console.log(idproduct)
+    axios.get('http://localhost:8000/ProductDetails/'+idproduct)
+    .then((respond) => {
+      console.log(respond)
+
+      var TampungData = respond.data
+      this.setState({
+        idproduct: TampungData[0].id,
+        namaproduct: TampungData[0].productname,
+        prices: TampungData[0].prices,
+        description: TampungData[0].description,
+      })
+    })
+  }
+
+  changeqty = (e) => {
+    this.setState({
+      qty: e.target.value
+    })
+    // console.log(e.target.value)
+  }
+
+  toCart = (e) => {
+
+    if(cookies.get('GetID') !== undefined){
+      var userid = cookies.get('GetID');
+      axios.post('http://localhost:8000/Cart',{
+        idproduk: this.state.idproduct,
+        qty: this.state.qty,
+        userID: userid
+      }).then((ambilData) => {
+        var data = ambilData.data;
+        if(data === 1){
+          this.setState({
+            redirec: true
+          })
+        }
+      })
+    } else if(cookies.get('GetID') === undefined){
+      this.setState({
+        status: 0
+      })
+    }
+    // window.location.reload();
+}
 
 render() {
 
@@ -52,16 +112,16 @@ return (
                 <aside className="col-sm-6">
                   <article className="card-body">
                     {/* short-info-wrap */}
-                    <h3 className="title mb-3">VGOD SaltNic E-Juices</h3>
+                    <h3 className="title mb-3">{this.state.namaproduct}</h3>
                     <div className="mb-3"> 
                       <var className="price h3 text-warning"> 
-                        <span className="currency">US $</span><span className="num">15.99</span>
+                        <span className="currency">US $</span><span className="num">{this.state.prices}</span>
                       </var> 
                       <span>/ per 1 bottle</span> 
                     </div> {/* price-detail-wrap .// */}
                     <dl>
                       <dt>Description</dt>
-                      <dd><p>Our signature watermelon candy flavor climaxing with a fresh breeze of menthol elevated with SaltNic, in 25mg and 50mg, it will to bring your favorite low wattage device to life.</p></dd>
+                      <dd><p>{this.state.description}</p></dd>
                     </dl>
                     <dl className="row">
                       <dt className="col-sm-3">Model#</dt>
@@ -93,11 +153,7 @@ return (
                         <dl className="dlist-inline">
                           <dt>Quantity: </dt>
                           <dd> 
-                            <select className="form-control form-control-sm" style={{width: 70}}>
-                              <option> 1 </option>
-                              <option> 2 </option>
-                              <option> 3 </option>
-                            </select>
+                          <input min={1} value={this.state.qty} onChange={this.changeqty} type="number"/>
                           </dd>
                         </dl>  {/* item-property .// */}
                       </div> {/* col.// */}
@@ -107,9 +163,8 @@ return (
                       </div> {/* col.// */}
                     </div> {/* row.// */}
                     <hr />
-                    <a href="#" className="btn  btn-warning"> <i className="fa fa-envelope" /> Contact Supplier </a>   
-                    <a href="#" className="btn  btn-outline-warning"> Start Order </a>
-                    {/* short-info-wrap .// */}
+                    <a href="#" className="btn  btn-warning"> <i className="fa fa-envelope" /> Contact Supplier </a> &nbsp; &nbsp;
+                    <button type="button" onClick={this.toCart} className="btn btn-md btn-danger"><Link to="/MyCart" className="to-cart"><span className="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Add to cart </Link></button>                    {/* short-info-wrap .// */}
                   </article> {/* card-body.// */}
                 </aside> {/* col.// */}
               </div> {/* row.// */}

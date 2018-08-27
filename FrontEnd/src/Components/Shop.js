@@ -26,6 +26,7 @@ render() {
     var productpicture = item.productpicture;
 
     return <div className="col-md-3 col-sm-6">
+    <Link to={{pathname: '/ProductDetails', state:{idproduk: productid}}}>
     <figure className="card card-product">
       <div className="img-wrap"> <img src="images/items/1.jpg" /></div>
       <figcaption className="info-wrap">
@@ -35,6 +36,7 @@ render() {
         </div> {/* price-wrap.// */}
       </figcaption>
     </figure> {/* card // */}
+    </Link>
   </div>
 
   })

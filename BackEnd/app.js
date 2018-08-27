@@ -91,6 +91,50 @@ app.get ('/AllProducts', (req, res) => {
     })
 })
 
+//AddToCart
+app.post('/Cart', (req, res) => {
+    var idproduct = req.body.idproduk
+    var userid = req.body.userID
+    var qty = req.body.qty
+    console.log(idproduct, userid, qty)
+
+//     var sql = `SELECT * FROM products WHERE id="${idproduct}"`;
+//   db.query(sql, (err, result) => {
+//     if(err){
+//       throw err;
+//     } else{
+//       var userID = userid;
+//       var productid = idproduct;
+//       var namaproduct = result.productname;
+//       var productdesc = result.description;
+//       var productprice = result.prices;
+
+//       var sql2 = `INSERT INTO cart (id_user, product_id, productname, productdescription, productprice, qty, status) VALUES ("${userID}", "${idproduct}", "${namaproduct}", "${productdesc}", "${productprice}",)`;
+//       db.query(sql2, (err, result) => {
+//         if(err){
+//           throw err;
+//         } else{
+//           res.send('1');
+//         }
+//             })
+//         }
+//     })
+})
+
+//ProductDetails
+app.get('/ProductDetails/:id', (req, res) => {
+    var idproduct = req.params.id
+    console.log(idproduct)
+
+    var getData = `SELECT * FROM products WHERE id="${idproduct}"`
+    db.query(getData, (err, result) => {
+        if (err) throw err;
+        else {
+            res.send(result)
+        }
+    })
+})
+
 app.listen(port, (req, res) => {
     console.log('Sucsessfully Connected')
 });
